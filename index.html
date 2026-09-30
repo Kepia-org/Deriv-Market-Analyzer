@@ -150,7 +150,7 @@ if (currentPrice > momentumPrice) {
 } else {
   momentum = "NEUTRAL ⏸️";
 }
-
+momentumDisplay.textContent = momentum;
         if (currentPrice > movingAverage) {
 
           direction.textContent = "Above Average 📈";
