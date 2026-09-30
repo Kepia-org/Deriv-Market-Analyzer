@@ -142,7 +142,7 @@ const MOMENTUM_TICKS = 5;
   prices[prices.length - 1 - MOMENTUM_TICKS];
 
 let momentum;
-momentumDisplay.textContent = momentum;
+
 if (currentPrice > momentumPrice) {
   momentum = "UP 📈";
 } else if (currentPrice < momentumPrice) {
@@ -150,6 +150,7 @@ if (currentPrice > momentumPrice) {
 } else {
   momentum = "NEUTRAL ⏸️";
 }
+
 momentumDisplay.textContent = momentum;
         if (currentPrice > movingAverage) {
 
