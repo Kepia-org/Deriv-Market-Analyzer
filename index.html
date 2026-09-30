@@ -110,6 +110,8 @@ const direction = document.getElementById("direction");
 
       // Store price
       prices.push(currentPrice);
+      document.getElementById("status").textContent =
+  "Prices collected: " + prices.length;
 console.log("Prices collected:", prices.length);
       // Keep only the latest 20 prices
       if (prices.length > MAX_PRICES) {
