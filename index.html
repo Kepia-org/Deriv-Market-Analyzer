@@ -135,6 +135,18 @@ const MOMENTUM_TICKS = 5;
         const movingAverage = total / MAX_PRICES;
 
         average.textContent = movingAverage.toFixed(2);
+        const momentumPrice =
+  prices[prices.length - 1 - MOMENTUM_TICKS];
+
+let momentum;
+
+if (currentPrice > momentumPrice) {
+  momentum = "UP 📈";
+} else if (currentPrice < momentumPrice) {
+  momentum = "DOWN 📉";
+} else {
+  momentum = "NEUTRAL ⏸️";
+}
 
         if (currentPrice > movingAverage) {
 
