@@ -143,12 +143,18 @@ const MOMENTUM_TICKS = 5;
 
 let momentum;
 
-if (currentPrice > momentumPrice) {
-  momentum = "UP 📈";
-} else if (currentPrice < momentumPrice) {
-  momentum = "DOWN 📉";
+if (
+  currentPrice > movingAverage &&
+  momentum === "UP 📈"
+) {
+  signal.textContent = "BUY 🟢";
+} else if (
+  currentPrice < movingAverage &&
+  momentum === "DOWN 📉"
+) {
+  signal.textContent = "SELL 🔴";
 } else {
-  momentum = "NEUTRAL ⏸️";
+  signal.textContent = "WAIT 🟡";
 }
 
 momentumDisplay.textContent = momentum;
