@@ -62,17 +62,26 @@
     <div class="price" id="price">
       --
     </div>
-
-    <div>
+<div>
       Live Market Price
     </div>
-<div>20-Tick Average: <span id="average">Waiting...</span></div>
-<div>Market Direction: <span id="direction">Waiting...</span></div>
-  </div>
+
+<div>
+  20-Tick Average: <span id="average">Waiting...</span>
+</div>
+
+<div>
+  Market Direction: <span id="direction">Waiting...</span>
+</div>
+
 <div>
   Trading Signal: <span id="signal">Waiting...</span>
 </div>
-  <script>
+
+</div>
+
+<script>
+    
 
   // Connect to Deriv's public market-data WebSocket
   const ws = new WebSocket(
