@@ -126,9 +126,15 @@ const direction = document.getElementById("direction");
 
         const movingAverage = total / MAX_PRICES;
 
-        console.log("Current Price:", currentPrice);
-        console.log("20-Tick Moving Average:", movingAverage);
+average.textContent = movingAverage.toFixed(2);
 
+if (currentPrice > movingAverage) {
+  direction.textContent = "Above Average 📈";
+} else if (currentPrice < movingAverage) {
+  direction.textContent = "Below Average 📉";
+} else {
+  direction.textContent = "At Average ⏸️";
+}
       }
 
       status.textContent = "Live data received 🟢";
