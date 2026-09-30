@@ -71,53 +71,83 @@
 
   <script>
 
-    // Connect to Deriv's public market-data WebSocket
-    const ws = new WebSocket(
-      "wss://api.derivws.com/trading/v1/options/ws/public"
-    );
+  // Connect to Deriv's public market-data WebSocket
+  const ws = new WebSocket(
+    "wss://api.derivws.com/trading/v1/options/ws/public"
+  );
 
-    const status = document.getElementById("status");
-    const price = document.getElementById("price");
+  const status = document.getElementById("status");
+  const price = document.getElementById("price");
 
-    ws.onopen = function () {
+  // Store recent market prices
+  const prices = [];
+  const MAX_PRICES = 20;
 
-      status.textContent = "Connected ✅";
+  ws.onopen = function () {
 
-      // Request Volatility 50 Index ticks
-      ws.send(JSON.stringify({
-        ticks: "1HZ50V",
-        subscribe: 1
-      }));
+    status.textContent = "Connected ✅";
 
-    };
+    // Request Volatility 50 Index ticks
+    ws.send(JSON.stringify({
+      ticks: "1HZ50V",
+      subscribe: 1
+    }));
 
-    ws.onmessage = function (event) {
+  };
 
-      const data = JSON.parse(event.data);
+  ws.onmessage = function (event) {
 
-      if (data.tick) {
+    const data = JSON.parse(event.data);
 
-        price.textContent = data.tick.quote;
+    if (data.tick) {
 
-        status.textContent = "Live data received 🟢";
+      const currentPrice = Number(data.tick.quote);
+
+      // Display live price
+      price.textContent = currentPrice;
+
+      // Store price
+      prices.push(currentPrice);
+
+      // Keep only the latest 20 prices
+      if (prices.length > MAX_PRICES) {
+        prices.shift();
+      }
+
+      // Calculate moving average once we have enough data
+      if (prices.length === MAX_PRICES) {
+
+        const total = prices.reduce(
+          (sum, value) => sum + value,
+          0
+        );
+
+        const movingAverage = total / MAX_PRICES;
+
+        console.log("Current Price:", currentPrice);
+        console.log("20-Tick Moving Average:", movingAverage);
 
       }
 
-    };
+      status.textContent = "Live data received 🟢";
 
-    ws.onerror = function () {
+    }
 
-      status.textContent = "Connection error ❌";
+  };
 
-    };
+  ws.onerror = function () {
 
-    ws.onclose = function () {
+    status.textContent = "Connection error ❌";
 
-      status.textContent = "Disconnected 🔴";
+  };
 
-    };
+  ws.onclose = function () {
 
-  </script>
+    status.textContent = "Disconnected 🔴";
+
+  };
+
+</script>
 
 </body>
 </html>
