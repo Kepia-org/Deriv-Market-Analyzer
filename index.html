@@ -117,7 +117,7 @@ const direction = document.getElementById("direction");
       }
 
       // Calculate moving average once we have enough data
-      if (prices.length === MAX_PRICES) {
+      if (prices.length >= MAX_PRICES) { 
 
         const total = prices.reduce(
           (sum, value) => sum + value,
