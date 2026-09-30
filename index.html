@@ -167,11 +167,14 @@ const difference = Math.abs(currentPrice - movingAverage);
 const strengthPercent = (difference / movingAverage) * 100;
 
 if (strengthPercent >= 0.20) {
-  strength.textContent = "STRONG 💪";
+  strength.textContent =
+    "STRONG 💪 (" + strengthPercent.toFixed(2) + "%)";
 } else if (strengthPercent >= 0.10) {
-  strength.textContent = "MEDIUM ⚡";
+  strength.textContent =
+    "MEDIUM ⚡ (" + strengthPercent.toFixed(2) + "%)";
 } else {
-  strength.textContent = "WEAK ⚠️";
+  strength.textContent =
+    "WEAK ⚠️ (" + strengthPercent.toFixed(2) + "%)";
 }
 momentumDisplay.textContent = momentum;
         if (currentPrice > movingAverage) {
