@@ -73,7 +73,9 @@
 <div>
   Market Direction: <span id="direction">Waiting...</span>
 </div>
-
+<div>
+  Momentum: <span id="momentum">Waiting...</span>
+</div>
 <div>
   Trading Signal: <span id="signal">Waiting...</span>
 </div>
@@ -92,7 +94,8 @@
   const price = document.getElementById("price");
 const average = document.getElementById("average");
 const direction = document.getElementById("direction");
-    const signal = document.getElementById("signal");
+const momentumDisplay = document.getElementById("momentum");
+const signal = document.getElementById("signal");
   // Store recent market prices
   const prices = [];
   const MAX_PRICES = 20;
@@ -139,7 +142,7 @@ const MOMENTUM_TICKS = 5;
   prices[prices.length - 1 - MOMENTUM_TICKS];
 
 let momentum;
-
+momentumDisplay.textContent = momentum;
 if (currentPrice > momentumPrice) {
   momentum = "UP 📈";
 } else if (currentPrice < momentumPrice) {
