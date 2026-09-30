@@ -110,7 +110,7 @@ const direction = document.getElementById("direction");
 
       // Store price
       prices.push(currentPrice);
-
+console.log("Prices collected:", prices.length);
       // Keep only the latest 20 prices
       if (prices.length > MAX_PRICES) {
         prices.shift();
