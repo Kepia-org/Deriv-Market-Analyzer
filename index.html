@@ -96,7 +96,7 @@ const direction = document.getElementById("direction");
   // Store recent market prices
   const prices = [];
   const MAX_PRICES = 20;
-
+const MOMENTUM_TICKS = 5;
   ws.onopen = function () {
 
     status.textContent = "Connected ✅";
