@@ -109,7 +109,7 @@ const direction = document.getElementById("direction");
 
   };
 
-  ws.onmessage = function (event) {
+    ws.onmessage = function (event) {
 
     const data = JSON.parse(event.data);
 
@@ -117,19 +117,15 @@ const direction = document.getElementById("direction");
 
       const currentPrice = Number(data.tick.quote);
 
-      // Display live price
       price.textContent = currentPrice;
 
-      // Store price
       prices.push(currentPrice);
-    
-      // Keep only the latest 20 prices
+
       if (prices.length > MAX_PRICES) {
         prices.shift();
       }
 
-      // Calculate moving average once we have enough data
-      if (prices.length >= MAX_PRICES) { 
+      if (prices.length >= MAX_PRICES) {
 
         const total = prices.reduce(
           (sum, value) => sum + value,
@@ -138,24 +134,38 @@ const direction = document.getElementById("direction");
 
         const movingAverage = total / MAX_PRICES;
 
-average.textContent = movingAverage.toFixed(2);
+        average.textContent = movingAverage.toFixed(2);
 
+        if (currentPrice > movingAverage) {
 
-      if (currentPrice > movingAverage) {
-  direction.textContent = "Above Average 📈";
-} else if (currentPrice < movingAverage) {
-  direction.textContent = "Below Average 📉";
-} else {
-  direction.textContent = "At Average ⏸️";
-}
+          direction.textContent = "Above Average 📈";
 
-if (currentPrice > movingAverage) {
-  signal.textContent = "BUY 🟢";
-} else if (currentPrice < movingAverage) {
-  signal.textContent = "SELL 🔴";
-} else {
-  signal.textContent = "WAIT 🟡";
-}
+        } else if (currentPrice < movingAverage) {
+
+          direction.textContent = "Below Average 📉";
+
+        } else {
+
+          direction.textContent = "At Average ⏸️";
+
+        }
+
+        if (currentPrice > movingAverage) {
+
+          signal.textContent = "BUY 🟢";
+
+        } else if (currentPrice < movingAverage) {
+
+          signal.textContent = "SELL 🔴";
+
+        } else {
+
+          signal.textContent = "WAIT 🟡";
+
+        }
+
+      }
+
       status.textContent = "Live data received 🟢";
 
     }
@@ -175,6 +185,5 @@ if (currentPrice > movingAverage) {
   };
 
 </script>
-
 </body>
 </html>
