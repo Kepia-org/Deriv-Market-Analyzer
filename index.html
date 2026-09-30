@@ -110,9 +110,7 @@ const direction = document.getElementById("direction");
 
       // Store price
       prices.push(currentPrice);
-      document.getElementById("status").textContent =
-  "Prices collected: " + prices.length;
-console.log("Prices collected:", prices.length);
+    
       // Keep only the latest 20 prices
       if (prices.length > MAX_PRICES) {
         prices.shift();
@@ -139,7 +137,7 @@ if (currentPrice > movingAverage) {
 }
       }
 
-      status.textContent = "Prices: " + prices.length;
+      status.textContent = "Live data received 🟢";
 
     }
 
