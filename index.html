@@ -102,6 +102,7 @@ const average = document.getElementById("average");
 const direction = document.getElementById("direction");
 const momentumDisplay = document.getElementById("momentum");
 const signal = document.getElementById("signal");
+  const strength = document.getElementById("strength");
   // Store recent market prices
   const prices = [];
   const MAX_PRICES = 20;
@@ -162,7 +163,16 @@ if (
 } else {
   signal.textContent = "WAIT 🟡";
 }
+const difference = Math.abs(currentPrice - movingAverage);
+const strengthPercent = (difference / movingAverage) * 100;
 
+if (strengthPercent >= 0.20) {
+  strength.textContent = "STRONG 💪";
+} else if (strengthPercent >= 0.10) {
+  strength.textContent = "MEDIUM ⚡";
+} else {
+  strength.textContent = "WEAK ⚠️";
+}
 momentumDisplay.textContent = momentum;
         if (currentPrice > movingAverage) {
 
