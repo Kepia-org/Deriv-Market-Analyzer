@@ -139,7 +139,13 @@ if (currentPrice > movingAverage) {
   direction.textContent = "At Average ⏸️";
 }
       }
-
+if (currentPrice > movingAverage) {
+  signal.textContent = "BUY 🟢";
+} else if (currentPrice < movingAverage) {
+  signal.textContent = "SELL 🔴";
+} else {
+  signal.textContent = "WAIT 🟡";
+}
       status.textContent = "Live data received 🟢";
 
     }
