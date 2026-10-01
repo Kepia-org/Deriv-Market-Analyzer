@@ -170,15 +170,22 @@ if (currentPrice > momentumPrice) {
 momentumDisplay.textContent = momentum;
 
 const difference = Math.abs(currentPrice - movingAverage);
+
 const strengthPercent =
   (difference / movingAverage) * 100;
-distance.textContent = strengthPercent.toFixed(3) + "%";
+
+distance.textContent =
+  strengthPercent.toFixed(3) + "%";
 
 const momentumDifference =
   currentPrice - momentumPrice;
 
 tickChange.textContent =
   momentumDifference.toFixed(2);
+
+
+// MARKET DIRECTION
+
 if (currentPrice > movingAverage) {
 
   direction.textContent = "Above Average 📈";
@@ -193,9 +200,11 @@ if (currentPrice > movingAverage) {
 
 }
 
+
+// TRADING SIGNAL
+
 if (
   currentPrice > movingAverage &&
-  momentum === "UP 📈" &&
   momentumDifference > 0
 ) {
 
@@ -203,7 +212,6 @@ if (
 
 } else if (
   currentPrice < movingAverage &&
-  momentum === "DOWN 📉" &&
   momentumDifference < 0
 ) {
 
@@ -214,7 +222,9 @@ if (
   signal.textContent = "WAIT 🟡";
 
 }
-}
+
+
+// SIGNAL STRENGTH
 
 if (strengthPercent >= 0.20) {
 
