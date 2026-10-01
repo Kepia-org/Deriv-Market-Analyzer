@@ -193,11 +193,7 @@ if (currentPrice > movingAverage) {
 
 }
 
-if (strengthPercent < 0.10) {
-
-  signal.textContent = "WAIT 🟡 SIDEWAYS";
-
-} else if (
+if (
   currentPrice > movingAverage &&
   momentum === "UP 📈" &&
   momentumDifference > 0
@@ -217,6 +213,7 @@ if (strengthPercent < 0.10) {
 
   signal.textContent = "WAIT 🟡";
 
+}
 }
 
 if (strengthPercent >= 0.20) {
