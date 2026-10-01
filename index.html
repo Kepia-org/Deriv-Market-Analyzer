@@ -119,6 +119,7 @@ const tickChange = document.getElementById("tickChange");
   const prices = [];
   const MAX_PRICES = 20;
 const MOMENTUM_TICKS = 5;
+  const TREND_TICKS = 10;
   ws.onopen = function () {
 
     status.textContent = "Connected ✅";
