@@ -145,66 +145,86 @@ const MOMENTUM_TICKS = 5;
         const movingAverage = total / MAX_PRICES;
 
         average.textContent = movingAverage.toFixed(2);
-        const momentumPrice =
+        
+const momentumPrice =
   prices[prices.length - 1 - MOMENTUM_TICKS];
 
 let momentum;
+
+if (currentPrice > momentumPrice) {
+  momentum = "UP 📈";
+} else if (currentPrice < momentumPrice) {
+  momentum = "DOWN 📉";
+} else {
+  momentum = "NEUTRAL ⏸️";
+}
+
+momentumDisplay.textContent = momentum;
+
 const difference = Math.abs(currentPrice - movingAverage);
-const strengthPercent = (difference / movingAverage) * 100;
+const strengthPercent =
+  (difference / movingAverage) * 100;
+
+if (currentPrice > movingAverage) {
+
+  direction.textContent = "Above Average 📈";
+
+} else if (currentPrice < movingAverage) {
+
+  direction.textContent = "Below Average 📉";
+
+} else {
+
+  direction.textContent = "At Average ⏸️";
+
+}
+
 if (strengthPercent < 0.10) {
+
   signal.textContent = "WAIT 🟡 SIDEWAYS";
+
 } else if (
   currentPrice > movingAverage &&
   momentum === "UP 📈"
 ) {
+
   signal.textContent = "BUY 🟢";
-} else if 
+
+} else if (
   currentPrice < movingAverage &&
   momentum === "DOWN 📉"
 ) {
-  signal.textContent = "SELL 🔴";
-} else {
-  signal.textContent = "WAIT 🟡";
-}
 
+  signal.textContent = "SELL 🔴";
+
+} else {
+
+  signal.textContent = "WAIT 🟡";
+
+}
 
 if (strengthPercent >= 0.20) {
+
   strength.textContent =
-    "STRONG 💪 (" + strengthPercent.toFixed(2) + "%)";
+    "STRONG 💪 (" +
+    strengthPercent.toFixed(2) +
+    "%)";
+
 } else if (strengthPercent >= 0.10) {
+
   strength.textContent =
-    "MEDIUM ⚡ (" + strengthPercent.toFixed(2) + "%)";
+    "MEDIUM ⚡ (" +
+    strengthPercent.toFixed(2) +
+    "%)";
+
 } else {
+
   strength.textContent =
-    "WEAK ⚠️ (" + strengthPercent.toFixed(2) + "%)";
+    "WEAK ⚠️ (" +
+    strengthPercent.toFixed(2) +
+    "%)";
+
 }
-momentumDisplay.textContent = momentum;
-        if (currentPrice > movingAverage) {
-
-          direction.textContent = "Above Average 📈";
-
-        } else if (currentPrice < movingAverage) {
-
-          direction.textContent = "Below Average 📉";
-
-        } else {
-
-          direction.textContent = "At Average ⏸️";
-
-        }
-
-        if (currentPrice > movingAverage) {
-
-          signal.textContent = "BUY 🟢";
-
-        } else if (currentPrice < movingAverage) {
-
-          signal.textContent = "SELL 🔴";
-
-        } else {
-
-          signal.textContent = "WAIT 🟡";
-
         }
 
       }
