@@ -149,13 +149,16 @@ const MOMENTUM_TICKS = 5;
   prices[prices.length - 1 - MOMENTUM_TICKS];
 
 let momentum;
-
-if (
+const difference = Math.abs(currentPrice - movingAverage);
+const strengthPercent = (difference / movingAverage) * 100;
+if (strengthPercent < 0.10) {
+  signal.textContent = "WAIT 🟡 SIDEWAYS";
+} else if (
   currentPrice > movingAverage &&
   momentum === "UP 📈"
 ) {
   signal.textContent = "BUY 🟢";
-} else if (
+} else if 
   currentPrice < movingAverage &&
   momentum === "DOWN 📉"
 ) {
@@ -163,8 +166,7 @@ if (
 } else {
   signal.textContent = "WAIT 🟡";
 }
-const difference = Math.abs(currentPrice - movingAverage);
-const strengthPercent = (difference / movingAverage) * 100;
+
 
 if (strengthPercent >= 0.20) {
   strength.textContent =
