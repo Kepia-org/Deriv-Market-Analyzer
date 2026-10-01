@@ -227,10 +227,11 @@ if (momentumDifference > 0) {
   bearishPoints++;
 }
 
-// 5-Tick Price Change
-if (momentumDifference > 0) {
+// 10-Tick Trend
+
+if (trendDifference > 0) {
   bullishPoints++;
-} else if (momentumDifference < 0) {
+} else if (trendDifference < 0) {
   bearishPoints++;
 }
 
