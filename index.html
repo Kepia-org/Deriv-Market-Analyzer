@@ -204,7 +204,58 @@ if (currentPrice > movingAverage) {
 
 }
 
+// SIGNAL CONFIRMATION
 
+let bullishPoints = 0;
+let bearishPoints = 0;
+
+// Market Direction
+if (currentPrice > movingAverage) {
+  bullishPoints++;
+} else if (currentPrice < movingAverage) {
+  bearishPoints++;
+}
+
+// Momentum
+if (momentumDifference > 0) {
+  bullishPoints++;
+} else if (momentumDifference < 0) {
+  bearishPoints++;
+}
+
+// 5-Tick Price Change
+if (momentumDifference > 0) {
+  bullishPoints++;
+} else if (momentumDifference < 0) {
+  bearishPoints++;
+}
+
+if (bullishPoints === 3) {
+
+  confirmation.textContent =
+    "3/3 🟢 FULL BULLISH CONFIRMATION";
+
+} else if (bearishPoints === 3) {
+
+  confirmation.textContent =
+    "3/3 🔴 FULL BEARISH CONFIRMATION";
+
+} else if (bullishPoints === 2) {
+
+  confirmation.textContent =
+    "2/3 🟡 BULLISH";
+
+} else if (bearishPoints === 2) {
+
+  confirmation.textContent =
+    "2/3 🟡 BEARISH";
+
+} else {
+
+  confirmation.textContent =
+    "MIXED ⚪";
+
+}
 // TRADING SIGNAL
 
 if (
