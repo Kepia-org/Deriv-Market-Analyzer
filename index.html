@@ -235,16 +235,13 @@ if (strengthPercent >= 0.20) {
 
   };
 
-  ws.onerror = function () {
+  ws.onerror = function (error) {
 
-    status.textContent = "Connection error ❌";
+  status.textContent = "WebSocket ERROR ❌";
 
-  };
+  alert("WebSocket connection failed");
 
-  ws.onclose = function () {
-
-    status.textContent = "Disconnected 🔴";
-
+};
   };
 
 </script>
