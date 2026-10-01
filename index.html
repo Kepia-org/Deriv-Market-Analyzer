@@ -235,11 +235,22 @@ if (strengthPercent >= 0.20) {
 
   };
 
-  ws.onerror = function (error) {
+ws.onerror = function (error) {
+
+  console.error("WebSocket error:", error);
 
   status.textContent = "WebSocket ERROR ❌";
 
-  alert("WebSocket connection failed");
+  alert("Deriv WebSocket connection failed. Check the browser console.");
+
+};
+
+ws.onclose = function (event) {
+
+  console.log("WebSocket closed:", event);
+
+  status.textContent =
+    "Disconnected ❌ Code: " + event.code;
 
 };
 
