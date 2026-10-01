@@ -94,6 +94,9 @@
 <div>
   5-Tick Price Change: <span id="tickChange">Waiting...</span>
 </div>
+  <div>
+  10-Tick Trend Change: <span id="trendChange">Waiting...</span>
+</div>
 </div>
 
 <script>
@@ -115,6 +118,7 @@ const strength = document.getElementById("strength");
   document.getElementById("confirmation");
 const distance = document.getElementById("distance");
 const tickChange = document.getElementById("tickChange");
+  const trendChange = document.getElementById("trendChange");
   // Store recent market prices
   const prices = [];
   const MAX_PRICES = 20;
@@ -190,7 +194,8 @@ const momentumDifference =
 
 tickChange.textContent =
   momentumDifference.toFixed(2);
-
+trendChange.textContent =
+  trendDifference.toFixed(2);
 
 // MARKET DIRECTION
 
