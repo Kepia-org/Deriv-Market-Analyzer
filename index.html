@@ -199,14 +199,16 @@ if (strengthPercent < 0.10) {
 
 } else if (
   currentPrice > movingAverage &&
-  momentum === "UP 📈"
+  momentum === "UP 📈" &&
+  momentumDifference > 0
 ) {
 
   signal.textContent = "BUY 🟢";
 
 } else if (
   currentPrice < movingAverage &&
-  momentum === "DOWN 📉"
+  momentum === "DOWN 📉" &&
+  momentumDifference < 0
 ) {
 
   signal.textContent = "SELL 🔴";
