@@ -85,7 +85,13 @@
 <div>
   Signal Strength: <span id="strength">Waiting...</span>
 </div>
+<div>
+  Distance from Average: <span id="distance">Waiting...</span>
+</div>
 
+<div>
+  5-Tick Price Change: <span id="tickChange">Waiting...</span>
+</div>
 </div>
 
 <script>
@@ -102,7 +108,9 @@ const average = document.getElementById("average");
 const direction = document.getElementById("direction");
 const momentumDisplay = document.getElementById("momentum");
 const signal = document.getElementById("signal");
-  const strength = document.getElementById("strength");
+const strength = document.getElementById("strength");
+const distance = document.getElementById("distance");
+const tickChange = document.getElementById("tickChange");
   // Store recent market prices
   const prices = [];
   const MAX_PRICES = 20;
@@ -164,7 +172,13 @@ momentumDisplay.textContent = momentum;
 const difference = Math.abs(currentPrice - movingAverage);
 const strengthPercent =
   (difference / movingAverage) * 100;
+distance.textContent = strengthPercent.toFixed(3) + "%";
 
+const momentumDifference =
+  currentPrice - momentumPrice;
+
+tickChange.textContent =
+  momentumDifference.toFixed(2);
 if (currentPrice > movingAverage) {
 
   direction.textContent = "Above Average 📈";
