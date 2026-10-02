@@ -344,11 +344,11 @@ if (
 
   // Start a new paper-trade evaluation
 
-  activeSignal = {
-    type: currentConfirmedSignal,
-    entryPrice: currentPrice,
-    ticks: 0
-  };
+  pendingSignals.push({
+  type: currentConfirmedSignal,
+  entryPrice: currentPrice,
+  ticks: 0
+});
 
   totalSignals++;
 
