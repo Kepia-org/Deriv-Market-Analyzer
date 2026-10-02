@@ -382,58 +382,54 @@ if (strengthPercent >= 0.20) {
         }
 
       }
-// EVALUATE ACTIVE SIGNAL
+// EVALUATE PENDING SIGNALS
 
-if (activeSignal !== null) {
+for (let i = pendingSignals.length - 1; i >= 0; i--) {
 
-  activeSignal.ticks++;
+  const pending = pendingSignals[i];
 
-  if (activeSignal.ticks >= EVALUATION_TICKS) {
+  pending.ticks++;
+
+  if (pending.ticks >= EVALUATION_TICKS) {
 
     const priceChange =
-      currentPrice - activeSignal.entryPrice;
+      currentPrice - pending.entryPrice;
 
     let correct = false;
 
     if (
-      activeSignal.type === "CONFIRMED BUY 🟢" &&
+      pending.type === "CONFIRMED BUY 🟢" &&
       priceChange > 0
     ) {
-
       correct = true;
 
     } else if (
-      activeSignal.type === "CONFIRMED SELL 🔴" &&
+      pending.type === "CONFIRMED SELL 🔴" &&
       priceChange < 0
     ) {
-
       correct = true;
-
     }
 
     if (correct) {
-
       correctSignals++;
-
     } else {
-
       incorrectSignals++;
-
     }
 
+    pendingSignals.splice(i, 1);
+
+    const evaluatedSignals =
+      correctSignals + incorrectSignals;
+
     const accuracy =
-      (correctSignals / totalSignals) * 100;
+      (correctSignals / evaluatedSignals) * 100;
 
     performance.innerHTML =
-      "Signals: " + totalSignals +
+      "Signals: " + evaluatedSignals +
       "<br>Correct: " + correctSignals +
       "<br>Incorrect: " + incorrectSignals +
       "<br>Accuracy: " + accuracy.toFixed(1) + "%";
-
-    activeSignal = null;
-
   }
-
 }
       status.textContent = "Live data received 🟢";
 
