@@ -271,17 +271,30 @@ if (bullishPoints === 3) {
 
 // TRADING SIGNAL
 
-if (
-  bullishPoints === 3
-) {
+if (bullishPoints === 3) {
 
-  signal.textContent = "BUY 🟢";
+  bullishCount++;
+  bearishCount = 0;
 
-} else if (
-  bearishPoints === 3
-) {
+} else if (bearishPoints === 3) {
 
-  signal.textContent = "SELL 🔴";
+  bearishCount++;
+  bullishCount = 0;
+
+} else {
+
+  bullishCount = 0;
+  bearishCount = 0;
+
+}
+
+if (bullishCount >= 3) {
+
+  signal.textContent = "CONFIRMED BUY 🟢";
+
+} else if (bearishCount >= 3) {
+
+  signal.textContent = "CONFIRMED SELL 🔴";
 
 } else {
 
