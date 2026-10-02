@@ -131,6 +131,12 @@ const tickChange = document.getElementById("tickChange");
   document.getElementById("signalHistory");
 const signalHistoryList = [];
   let lastConfirmedSignal = "";
+  const performance =
+  document.getElementById("performance");
+
+let totalSignals = 0;
+let correctSignals = 0;
+let incorrectSignals = 0;
   // Store recent market prices
   const prices = [];
   const MAX_PRICES = 20;
