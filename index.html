@@ -266,18 +266,17 @@ if (bullishPoints === 3) {
     "MIXED ⚪";
 
 }
+
 // TRADING SIGNAL
 
 if (
-  currentPrice > movingAverage &&
-  momentumDifference > 0
+  bullishPoints === 3
 ) {
 
   signal.textContent = "BUY 🟢";
 
 } else if (
-  currentPrice < movingAverage &&
-  momentumDifference < 0
+  bearishPoints === 3
 ) {
 
   signal.textContent = "SELL 🔴";
@@ -287,8 +286,6 @@ if (
   signal.textContent = "WAIT 🟡";
 
 }
-
-
 // SIGNAL STRENGTH
 
 if (strengthPercent >= 0.20) {
