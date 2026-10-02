@@ -342,6 +342,16 @@ if (
   signalHistory.innerHTML =
     signalHistoryList.join("<br>");
 
+  // Start a new paper-trade evaluation
+
+  activeSignal = {
+    type: currentConfirmedSignal,
+    entryPrice: currentPrice,
+    ticks: 0
+  };
+
+  totalSignals++;
+
   lastConfirmedSignal = currentConfirmedSignal;
 
 }
