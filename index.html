@@ -351,7 +351,9 @@ if (
 });
 
   totalSignals++;
-
+performance.innerHTML =
+  "Pending evaluation...<br>" +
+  "Signals generated: " + totalSignals;
   lastConfirmedSignal = currentConfirmedSignal;
 
 }
