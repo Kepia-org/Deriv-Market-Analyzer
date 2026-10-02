@@ -124,6 +124,8 @@ const tickChange = document.getElementById("tickChange");
   const MAX_PRICES = 20;
 const MOMENTUM_TICKS = 5;
   const TREND_TICKS = 10;
+  let bullishCount = 0;
+let bearishCount = 0;
   ws.onopen = function () {
 
     status.textContent = "Connected ✅";
