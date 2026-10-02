@@ -296,17 +296,41 @@ if (bullishPoints === 3) {
 
 }
 
+let currentConfirmedSignal = "";
+
 if (bullishCount >= 3) {
 
-  signal.textContent = "CONFIRMED BUY 🟢";
+  currentConfirmedSignal = "CONFIRMED BUY 🟢";
+  signal.textContent = currentConfirmedSignal;
 
 } else if (bearishCount >= 3) {
 
-  signal.textContent = "CONFIRMED SELL 🔴";
+  currentConfirmedSignal = "CONFIRMED SELL 🔴";
+  signal.textContent = currentConfirmedSignal;
 
 } else {
 
   signal.textContent = "WAIT 🟡";
+
+}
+
+// SIGNAL HISTORY
+
+if (
+  currentConfirmedSignal !== "" &&
+  currentConfirmedSignal !== lastConfirmedSignal
+) {
+
+  signalHistoryList.unshift(currentConfirmedSignal);
+
+  if (signalHistoryList.length > 5) {
+    signalHistoryList.pop();
+  }
+
+  signalHistory.innerHTML =
+    signalHistoryList.join("<br>");
+
+  lastConfirmedSignal = currentConfirmedSignal;
 
 }
 // SIGNAL STRENGTH
