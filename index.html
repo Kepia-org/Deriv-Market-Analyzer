@@ -137,6 +137,8 @@ const signalHistoryList = [];
 let totalSignals = 0;
 let correctSignals = 0;
 let incorrectSignals = 0;
+  let activeSignal = null;
+const EVALUATION_TICKS = 5;
   // Store recent market prices
   const prices = [];
   const MAX_PRICES = 20;
