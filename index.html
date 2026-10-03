@@ -108,33 +108,78 @@
 </div>
 
 <script>
-    alert("BOT JAVASCRIPT IS RUNNING");
 
-  // Connect to Deriv's public market-data WebSocket
-  const ws = new WebSocket(
-    "wss://api.derivws.com/trading/v1/options/ws/public"
-  );
+alert("BOT JAVASCRIPT IS RUNNING");
 
-  const status = document.getElementById("status");
-  const price = document.getElementById("price");
+// ===============================
+// CONNECT TO DERIV
+// ===============================
+
+const ws = new WebSocket(
+  "wss://api.derivws.com/trading/v1/options/ws/public"
+);
+
+
+// ===============================
+// PAGE ELEMENTS
+// ===============================
+
+const status = document.getElementById("status");
+const price = document.getElementById("price");
 const average = document.getElementById("average");
 const direction = document.getElementById("direction");
 const momentumDisplay = document.getElementById("momentum");
 const signal = document.getElementById("signal");
+const confirmation = document.getElementById("confirmation");
 const strength = document.getElementById("strength");
-  const confirmation =
-  document.getElementById("confirmation");
 const distance = document.getElementById("distance");
 const tickChange = document.getElementById("tickChange");
-  const trendChange = document.getElementById("trendChange");
-  const signalHistory =
-  document.getElementById("signalHistory");
+const trendChange = document.getElementById("trendChange");
+const signalHistory = document.getElementById("signalHistory");
+const performance = document.getElementById("performance");
+
+
+// ===============================
+// MARKET SETTINGS
+// ===============================
+
+const prices = [];
+
+const MAX_PRICES = 20;
+const MOMENTUM_TICKS = 5;
+const TREND_TICKS = 10;
+
+const EVALUATION_TICKS = 5;
+
+
+// ===============================
+// SIGNAL COUNTERS
+// ===============================
+
+let bullishCount = 0;
+let bearishCount = 0;
+
+
+// ===============================
+// SIGNAL HISTORY
+// ===============================
+
 const signalHistoryList = [];
-  let lastConfirmedSignal = "";
-  const performance =
-  document.getElementById("performance");
+
+
+// ===============================
+// PENDING PAPER TRADES
+// ===============================
+
+const pendingSignals = [];
+
+
+// ===============================
+// PERFORMANCE VARIABLES
+// ===============================
 
 let totalSignals = 0;
+
 let correctSignals = 0;
 let incorrectSignals = 0;
 
@@ -145,7 +190,8 @@ let buyIncorrect = 0;
 let sellSignals = 0;
 let sellCorrect = 0;
 let sellIncorrect = 0;
-  let weakSignals = 0;
+
+let weakSignals = 0;
 let weakCorrect = 0;
 let weakIncorrect = 0;
 
@@ -156,431 +202,807 @@ let mediumIncorrect = 0;
 let strongSignals = 0;
 let strongCorrect = 0;
 let strongIncorrect = 0;
-  const pendingSignals = [];
-const EVALUATION_TICKS = 5;
-  // Store recent market prices
-  const prices = [];
-  const MAX_PRICES = 20;
-const MOMENTUM_TICKS = 5;
-  const TREND_TICKS = 10;
-  let bullishCount = 0;
-let bearishCount = 0;
-  ws.onopen = function () {
 
-    status.textContent = "Connected ✅";
 
-    // Request Volatility 50 Index ticks
-    ws.send(JSON.stringify({
-      ticks: "1HZ50V",
-      subscribe: 1
-    }));
+// ===============================
+// WEBSOCKET OPEN
+// ===============================
 
-  };
+ws.onopen = function () {
 
-    ws.onmessage = function (event) {
+  status.textContent = "Connected ✅";
 
-    const data = JSON.parse(event.data);
-
-    if (data.tick) {
-
-      const currentPrice = Number(data.tick.quote);
-
-      price.textContent = currentPrice;
-
-      prices.push(currentPrice);
-
-      if (prices.length > MAX_PRICES) {
-        prices.shift();
-      }
-
-      if (prices.length >= MAX_PRICES) {
-
-        const total = prices.reduce(
-          (sum, value) => sum + value,
-          0
-        );
-
-        const movingAverage = total / MAX_PRICES;
-
-        average.textContent = movingAverage.toFixed(2);
-        
-const momentumPrice =
-  prices[prices.length - 1 - MOMENTUM_TICKS];
-const trendPrice =
-  prices[prices.length - 1 - TREND_TICKS];
-let momentum;
-
-if (currentPrice > momentumPrice) {
-  momentum = "UP 📈";
-} else if (currentPrice < momentumPrice) {
-  momentum = "DOWN 📉";
-} else {
-  momentum = "NEUTRAL ⏸️";
-}
-
-momentumDisplay.textContent = momentum;
-
-const difference = Math.abs(currentPrice - movingAverage);
-
-const strengthPercent =
-  (difference / movingAverage) * 100;
-
-distance.textContent =
-  strengthPercent.toFixed(3) + "%";
-
-const momentumDifference =
-  currentPrice - momentumPrice;
-   const trendDifference =
-  currentPrice - trendPrice;     
-
-tickChange.textContent =
-  momentumDifference.toFixed(2);
-trendChange.textContent =
-  trendDifference.toFixed(2);
-
-// MARKET DIRECTION
-
-if (currentPrice > movingAverage) {
-
-  direction.textContent = "Above Average 📈";
-
-} else if (currentPrice < movingAverage) {
-
-  direction.textContent = "Below Average 📉";
-
-} else {
-
-  direction.textContent = "At Average ⏸️";
-
-}
-
-// SIGNAL CONFIRMATION
-
-let bullishPoints = 0;
-let bearishPoints = 0;
-
-// Market Direction
-if (currentPrice > movingAverage) {
-  bullishPoints++;
-} else if (currentPrice < movingAverage) {
-  bearishPoints++;
-}
-
-// Momentum
-if (momentumDifference > 0) {
-  bullishPoints++;
-} else if (momentumDifference < 0) {
-  bearishPoints++;
-}
-
-// 10-Tick Trend
-
-if (trendDifference > 0) {
-  bullishPoints++;
-} else if (trendDifference < 0) {
-  bearishPoints++;
-}
-
-if (bullishPoints === 3) {
-
-  confirmation.textContent =
-    "3/3 🟢 FULL BULLISH CONFIRMATION";
-
-} else if (bearishPoints === 3) {
-
-  confirmation.textContent =
-    "3/3 🔴 FULL BEARISH CONFIRMATION";
-
-} else if (bullishPoints === 2) {
-
-  confirmation.textContent =
-    "2/3 🟡 BULLISH";
-
-} else if (bearishPoints === 2) {
-
-  confirmation.textContent =
-    "2/3 🟡 BEARISH";
-
-} else {
-
-  confirmation.textContent =
-    "MIXED ⚪";
-
-}
-
-// TRADING SIGNAL
-
-if (bullishPoints === 3) {
-
-  bullishCount++;
-  bearishCount = 0;
-
-} else if (bearishPoints === 3) {
-
-  bearishCount++;
-  bullishCount = 0;
-
-} else {
-
-  bullishCount = 0;
-  bearishCount = 0;
-
-}
-
-let currentConfirmedSignal = "";
-
-if (bullishCount >= 3) {
-
-  currentConfirmedSignal = "CONFIRMED BUY 🟢";
-  signal.textContent = currentConfirmedSignal;
-
-} else if (bearishCount >= 3) {
-
-  currentConfirmedSignal = "CONFIRMED SELL 🔴";
-  signal.textContent = currentConfirmedSignal;
-
-} else {
-
-  signal.textContent = "WAIT 🟡";
-
-}
-
-// SIGNAL HISTORY
-
-if (currentConfirmedSignal !== "") {
-
-  signalHistoryList.unshift(currentConfirmedSignal);
-
-  if (signalHistoryList.length > 5) {
-    signalHistoryList.pop();
-  }
-
-  signalHistory.innerHTML =
-    signalHistoryList.join("<br>");
-
-  // Start a new paper-trade evaluation
-  // for EVERY confirmed signal
-
-  pendingSignals.push({
-  type: currentConfirmedSignal,
-  entryPrice: currentPrice,
-  strength: strengthPercent,
-  ticks: 0
-});
-
-  totalSignals++;
-if (currentConfirmedSignal === "CONFIRMED BUY 🟢") {
-  buySignals++;
-} else if (currentConfirmedSignal === "CONFIRMED SELL 🔴") {
-  sellSignals++;
-}
-  performance.innerHTML =
-    "Pending evaluation...<br>" +
-    "Signals generated: " + totalSignals;
-}
-        if (strengthPercent < 0.10) {
-  weakSignals++;
-} else if (strengthPercent < 0.20) {
-  mediumSignals++;
-} else {
-  strongSignals++;
-}
-// SIGNAL STRENGTH
-
-if (strengthPercent >= 0.20) {
-
-  strength.textContent =
-    "STRONG 💪 (" +
-    strengthPercent.toFixed(2) +
-    "%)";
-
-} else if (strengthPercent >= 0.10) {
-
-  strength.textContent =
-    "MEDIUM ⚡ (" +
-    strengthPercent.toFixed(2) +
-    "%)";
-
-} else {
-
-  strength.textContent =
-    "WEAK ⚠️ (" +
-    strengthPercent.toFixed(2) +
-    "%)";
-
-}
-        }
-// EVALUATE PENDING SIGNALS
-
-for (let i = pendingSignals.length - 1; i >= 0; i--) {
-
-  const pending = pendingSignals[i];
-
-  pending.ticks++;
-
-  if (pending.ticks >= EVALUATION_TICKS) {
-
-    const priceChange =
-      currentPrice - pending.entryPrice;
-
-    let correct = false;
-
-    if (
-      pending.type === "CONFIRMED BUY 🟢" &&
-      priceChange > 0
-    ) {
-      correct = true;
-
-    } else if (
-      pending.type === "CONFIRMED SELL 🔴" &&
-      priceChange < 0
-    ) {
-      correct = true;
-    }
-
-    if (correct) {
-  correctSignals++;
-
-  if (pending.type === "CONFIRMED BUY 🟢") {
-    buyCorrect++;
-  } else if (pending.type === "CONFIRMED SELL 🔴") {
-    sellCorrect++;
-  }
-
-  if (pending.strength < 0.10) {
-    weakCorrect++;
-  } else if (pending.strength < 0.20) {
-    mediumCorrect++;
-  } else {
-    strongCorrect++;
-  }
-
-} else {
-  incorrectSignals++;
-
-  if (pending.type === "CONFIRMED BUY 🟢") {
-    buyIncorrect++;
-  } else if (pending.type === "CONFIRMED SELL 🔴") {
-    sellIncorrect++;
-  }
-
-  if (pending.strength < 0.10) {
-    weakIncorrect++;
-  } else if (pending.strength < 0.20) {
-    mediumIncorrect++;
-  } else {
-    strongIncorrect++;
-  }
-}
-}
-
-pendingSignals.splice(i, 1);
-
-    const evaluatedSignals =
-      correctSignals + incorrectSignals;
-
-    const accuracy =
-      (correctSignals / evaluatedSignals) * 100;
-
-    const buyEvaluated =
-  buyCorrect + buyIncorrect;
-
-const sellEvaluated =
-  sellCorrect + sellIncorrect;
-
-const weakEvaluated =
-  weakCorrect + weakIncorrect;
-
-const mediumEvaluated =
-  mediumCorrect + mediumIncorrect;
-
-const strongEvaluated =
-  strongCorrect + strongIncorrect;
-
-const buyAccuracy =
-  buyEvaluated > 0
-    ? (buyCorrect / buyEvaluated) * 100
-    : 0;
-
-const sellAccuracy =
-  sellEvaluated > 0
-    ? (sellCorrect / sellEvaluated) * 100
-    : 0;
-
-const weakAccuracy =
-  weakEvaluated > 0
-    ? (weakCorrect / weakEvaluated) * 100
-    : 0;
-
-const mediumAccuracy =
-  mediumEvaluated > 0
-    ? (mediumCorrect / mediumEvaluated) * 100
-    : 0;
-
-const strongAccuracy =
-  strongEvaluated > 0
-    ? (strongCorrect / strongEvaluated) * 100
-    : 0;
-
-performance.innerHTML =
-  "Signals: " + evaluatedSignals +
-  "<br>Correct: " + correctSignals +
-  "<br>Incorrect: " + incorrectSignals +
-  "<br>Accuracy: " + accuracy.toFixed(1) + "%" +
-  "<br><br>" +
-
-  "BUY: " + buyEvaluated +
-  " | Correct: " + buyCorrect +
-  " | Incorrect: " + buyIncorrect +
-  " | Accuracy: " + buyAccuracy.toFixed(1) + "%" +
-  "<br>" +
-
-  "SELL: " + sellEvaluated +
-  " | Correct: " + sellCorrect +
-  " | Incorrect: " + sellIncorrect +
-  " | Accuracy: " + sellAccuracy.toFixed(1) + "%" +
-  "<br><br>" +
-
-  "WEAK: " + weakEvaluated +
-  " | Correct: " + weakCorrect +
-  " | Incorrect: " + weakIncorrect +
-  " | Accuracy: " + weakAccuracy.toFixed(1) + "%" +
-  "<br>" +
-
-  "MEDIUM: " + mediumEvaluated +
-  " | Correct: " + mediumCorrect +
-  " | Incorrect: " + mediumIncorrect +
-  " | Accuracy: " + mediumAccuracy.toFixed(1) + "%" +
-  "<br>" +
-
-  "STRONG: " + strongEvaluated +
-  " | Correct: " + strongCorrect +
-  " | Incorrect: " + strongIncorrect +
-  " | Accuracy: " + strongAccuracy.toFixed(1) + "%";
-  }
-}
-      }
-
-      status.textContent = "Live data received 🟢";
-
-  };
-
-ws.onerror = function (error) {
-
-  console.error("WebSocket error:", error);
-
-  status.textContent = "WebSocket ERROR ❌";
-
-  alert("Deriv WebSocket connection failed. Check the browser console.");
+  ws.send(JSON.stringify({
+    ticks: "1HZ50V",
+    subscribe: 1
+  }));
 
 };
 
-ws.onclose = function (event) {
 
-  console.log("WebSocket closed:", event);
+// ===============================
+// RECEIVE DATA
+// ===============================
+
+ws.onmessage = function (event) {
+
+  const data = JSON.parse(event.data);
+
+  if (!data.tick) {
+    return;
+  }
+
+
+  // ===============================
+  // CURRENT PRICE
+  // ===============================
+
+  const currentPrice = Number(
+    data.tick.quote
+  );
+
+  price.textContent = currentPrice;
+
+
+  // ===============================
+  // STORE PRICE
+  // ===============================
+
+  prices.push(currentPrice);
+
+  if (prices.length > MAX_PRICES) {
+    prices.shift();
+  }
+
+
+  // ===============================
+  // WAIT FOR 20 TICKS
+  // ===============================
+
+  if (prices.length < MAX_PRICES) {
+
+    status.textContent =
+      "Receiving data... " +
+      prices.length +
+      "/20";
+
+    return;
+  }
+
+
+  // ===============================
+  // 20-TICK AVERAGE
+  // ===============================
+
+  const total = prices.reduce(
+    (sum, value) => sum + value,
+    0
+  );
+
+  const movingAverage =
+    total / MAX_PRICES;
+
+  average.textContent =
+    movingAverage.toFixed(2);
+
+
+  // ===============================
+  // MOMENTUM
+  // ===============================
+
+  const momentumPrice =
+    prices[
+      prices.length - 1 - MOMENTUM_TICKS
+    ];
+
+  const momentumDifference =
+    currentPrice - momentumPrice;
+
+  let momentum;
+
+  if (momentumDifference > 0) {
+
+    momentum = "UP 📈";
+
+  } else if (momentumDifference < 0) {
+
+    momentum = "DOWN 📉";
+
+  } else {
+
+    momentum = "NEUTRAL ⏸️";
+
+  }
+
+  momentumDisplay.textContent =
+    momentum;
+
+
+  // ===============================
+  // 10-TICK TREND
+  // ===============================
+
+  const trendPrice =
+    prices[
+      prices.length - 1 - TREND_TICKS
+    ];
+
+  const trendDifference =
+    currentPrice - trendPrice;
+
+  tickChange.textContent =
+    momentumDifference.toFixed(2);
+
+  trendChange.textContent =
+    trendDifference.toFixed(2);
+
+
+  // ===============================
+  // MARKET DIRECTION
+  // ===============================
+
+  if (currentPrice > movingAverage) {
+
+    direction.textContent =
+      "Above Average 📈";
+
+  } else if (currentPrice < movingAverage) {
+
+    direction.textContent =
+      "Below Average 📉";
+
+  } else {
+
+    direction.textContent =
+      "At Average ⏸️";
+
+  }
+
+
+  // ===============================
+  // SIGNAL POINTS
+  // ===============================
+
+  let bullishPoints = 0;
+  let bearishPoints = 0;
+
+
+  // Market direction
+
+  if (currentPrice > movingAverage) {
+
+    bullishPoints++;
+
+  } else if (currentPrice < movingAverage) {
+
+    bearishPoints++;
+
+  }
+
+
+  // Momentum
+
+  if (momentumDifference > 0) {
+
+    bullishPoints++;
+
+  } else if (momentumDifference < 0) {
+
+    bearishPoints++;
+
+  }
+
+
+  // 10-tick trend
+
+  if (trendDifference > 0) {
+
+    bullishPoints++;
+
+  } else if (trendDifference < 0) {
+
+    bearishPoints++;
+
+  }
+
+
+  // ===============================
+  // CONFIRMATION
+  // ===============================
+
+  if (bullishPoints === 3) {
+
+    confirmation.textContent =
+      "3/3 🟢 FULL BULLISH CONFIRMATION";
+
+  } else if (bearishPoints === 3) {
+
+    confirmation.textContent =
+      "3/3 🔴 FULL BEARISH CONFIRMATION";
+
+  } else if (bullishPoints === 2) {
+
+    confirmation.textContent =
+      "2/3 🟡 BULLISH";
+
+  } else if (bearishPoints === 2) {
+
+    confirmation.textContent =
+      "2/3 🟡 BEARISH";
+
+  } else {
+
+    confirmation.textContent =
+      "MIXED ⚪";
+
+  }
+
+
+  // ===============================
+  // CONFIRMED SIGNAL COUNT
+  // ===============================
+
+  if (bullishPoints === 3) {
+
+    bullishCount++;
+    bearishCount = 0;
+
+  } else if (bearishPoints === 3) {
+
+    bearishCount++;
+    bullishCount = 0;
+
+  } else {
+
+    bullishCount = 0;
+    bearishCount = 0;
+
+  }
+
+
+  // ===============================
+  // TRADING SIGNAL
+  // ===============================
+
+  let currentConfirmedSignal = "";
+
+
+  if (bullishCount >= 3) {
+
+    currentConfirmedSignal =
+      "CONFIRMED BUY 🟢";
+
+    signal.textContent =
+      currentConfirmedSignal;
+
+  } else if (bearishCount >= 3) {
+
+    currentConfirmedSignal =
+      "CONFIRMED SELL 🔴";
+
+    signal.textContent =
+      currentConfirmedSignal;
+
+  } else {
+
+    signal.textContent =
+      "WAIT 🟡";
+
+  }
+
+
+  // ===============================
+  // SIGNAL STRENGTH
+  // ===============================
+
+  const difference =
+    Math.abs(
+      currentPrice - movingAverage
+    );
+
+  const strengthPercent =
+    (difference / movingAverage) * 100;
+
+
+  distance.textContent =
+    strengthPercent.toFixed(3) + "%";
+
+
+  if (strengthPercent >= 0.20) {
+
+    strength.textContent =
+      "STRONG 💪 (" +
+      strengthPercent.toFixed(2) +
+      "%)";
+
+  } else if (strengthPercent >= 0.10) {
+
+    strength.textContent =
+      "MEDIUM ⚡ (" +
+      strengthPercent.toFixed(2) +
+      "%)";
+
+  } else {
+
+    strength.textContent =
+      "WEAK ⚠️ (" +
+      strengthPercent.toFixed(2) +
+      "%)";
+
+  }
+
+
+  // ===============================
+  // CREATE NEW PAPER TRADE
+  // ===============================
+
+  if (currentConfirmedSignal !== "") {
+
+    signalHistoryList.unshift(
+      currentConfirmedSignal
+    );
+
+    if (signalHistoryList.length > 5) {
+      signalHistoryList.pop();
+    }
+
+    signalHistory.innerHTML =
+      signalHistoryList.join("<br>");
+
+
+    // Every confirmed signal gets
+    // its own independent evaluation.
+
+    pendingSignals.push({
+
+      type: currentConfirmedSignal,
+
+      entryPrice: currentPrice,
+
+      strength: strengthPercent,
+
+      ticks: 0
+
+    });
+
+
+    totalSignals++;
+
+
+    if (
+      currentConfirmedSignal ===
+      "CONFIRMED BUY 🟢"
+    ) {
+
+      buySignals++;
+
+    } else if (
+      currentConfirmedSignal ===
+      "CONFIRMED SELL 🔴"
+    ) {
+
+      sellSignals++;
+
+    }
+
+
+    // Strength category
+
+    if (strengthPercent < 0.10) {
+
+      weakSignals++;
+
+    } else if (strengthPercent < 0.20) {
+
+      mediumSignals++;
+
+    } else {
+
+      strongSignals++;
+
+    }
+
+  }
+
+
+  // ===============================
+  // EVALUATE PENDING SIGNALS
+  // ===============================
+
+  for (
+    let i = pendingSignals.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    const pending =
+      pendingSignals[i];
+
+    pending.ticks++;
+
+
+    if (
+      pending.ticks >=
+      EVALUATION_TICKS
+    ) {
+
+      const priceChange =
+        currentPrice -
+        pending.entryPrice;
+
+      let correct = false;
+
+
+      // BUY
+
+      if (
+        pending.type ===
+        "CONFIRMED BUY 🟢" &&
+        priceChange > 0
+      ) {
+
+        correct = true;
+
+      }
+
+
+      // SELL
+
+      else if (
+        pending.type ===
+        "CONFIRMED SELL 🔴" &&
+        priceChange < 0
+      ) {
+
+        correct = true;
+
+      }
+
+
+      // ===============================
+      // CORRECT SIGNAL
+      // ===============================
+
+      if (correct) {
+
+        correctSignals++;
+
+
+        if (
+          pending.type ===
+          "CONFIRMED BUY 🟢"
+        ) {
+
+          buyCorrect++;
+
+        } else {
+
+          sellCorrect++;
+
+        }
+
+
+        if (pending.strength < 0.10) {
+
+          weakCorrect++;
+
+        } else if (
+          pending.strength < 0.20
+        ) {
+
+          mediumCorrect++;
+
+        } else {
+
+          strongCorrect++;
+
+        }
+
+
+      }
+
+
+      // ===============================
+      // INCORRECT SIGNAL
+      // ===============================
+
+      else {
+
+        incorrectSignals++;
+
+
+        if (
+          pending.type ===
+          "CONFIRMED BUY 🟢"
+        ) {
+
+          buyIncorrect++;
+
+        } else {
+
+          sellIncorrect++;
+
+        }
+
+
+        if (pending.strength < 0.10) {
+
+          weakIncorrect++;
+
+        } else if (
+          pending.strength < 0.20
+        ) {
+
+          mediumIncorrect++;
+
+        } else {
+
+          strongIncorrect++;
+
+        }
+
+      }
+
+
+      // Remove evaluated signal
+
+      pendingSignals.splice(i, 1);
+
+    }
+
+  }
+
+
+  // ===============================
+  // PERFORMANCE
+  // ===============================
+
+  const evaluatedSignals =
+    correctSignals +
+    incorrectSignals;
+
+
+  const accuracy =
+    evaluatedSignals > 0
+      ? (
+          correctSignals /
+          evaluatedSignals
+        ) * 100
+      : 0;
+
+
+  // BUY
+
+  const buyEvaluated =
+    buyCorrect +
+    buyIncorrect;
+
+  const buyAccuracy =
+    buyEvaluated > 0
+      ? (
+          buyCorrect /
+          buyEvaluated
+        ) * 100
+      : 0;
+
+
+  // SELL
+
+  const sellEvaluated =
+    sellCorrect +
+    sellIncorrect;
+
+  const sellAccuracy =
+    sellEvaluated > 0
+      ? (
+          sellCorrect /
+          sellEvaluated
+        ) * 100
+      : 0;
+
+
+  // WEAK
+
+  const weakEvaluated =
+    weakCorrect +
+    weakIncorrect;
+
+  const weakAccuracy =
+    weakEvaluated > 0
+      ? (
+          weakCorrect /
+          weakEvaluated
+        ) * 100
+      : 0;
+
+
+  // MEDIUM
+
+  const mediumEvaluated =
+    mediumCorrect +
+    mediumIncorrect;
+
+  const mediumAccuracy =
+    mediumEvaluated > 0
+      ? (
+          mediumCorrect /
+          mediumEvaluated
+        ) * 100
+      : 0;
+
+
+  // STRONG
+
+  const strongEvaluated =
+    strongCorrect +
+    strongIncorrect;
+
+  const strongAccuracy =
+    strongEvaluated > 0
+      ? (
+          strongCorrect /
+          strongEvaluated
+        ) * 100
+      : 0;
+
+
+  // ===============================
+  // DISPLAY PERFORMANCE
+  // ===============================
+
+  if (evaluatedSignals === 0) {
+
+    performance.innerHTML =
+      "Waiting for first evaluated signal...<br>" +
+      "Signals generated: " +
+      totalSignals;
+
+  } else {
+
+    performance.innerHTML =
+
+      "Signals: " +
+      evaluatedSignals +
+
+      "<br>Correct: " +
+      correctSignals +
+
+      "<br>Incorrect: " +
+      incorrectSignals +
+
+      "<br>Accuracy: " +
+      accuracy.toFixed(1) +
+
+      "%" +
+
+      "<br><br>" +
+
+      "BUY: " +
+      buyEvaluated +
+
+      " | Correct: " +
+      buyCorrect +
+
+      " | Incorrect: " +
+      buyIncorrect +
+
+      " | Accuracy: " +
+      buyAccuracy.toFixed(1) +
+
+      "%" +
+
+      "<br>" +
+
+      "SELL: " +
+      sellEvaluated +
+
+      " | Correct: " +
+      sellCorrect +
+
+      " | Incorrect: " +
+      sellIncorrect +
+
+      " | Accuracy: " +
+      sellAccuracy.toFixed(1) +
+
+      "%" +
+
+      "<br><br>" +
+
+      "WEAK: " +
+      weakEvaluated +
+
+      " | Correct: " +
+      weakCorrect +
+
+      " | Incorrect: " +
+      weakIncorrect +
+
+      " | Accuracy: " +
+      weakAccuracy.toFixed(1) +
+
+      "%" +
+
+      "<br>" +
+
+      "MEDIUM: " +
+      mediumEvaluated +
+
+      " | Correct: " +
+      mediumCorrect +
+
+      " | Incorrect: " +
+      mediumIncorrect +
+
+      " | Accuracy: " +
+      mediumAccuracy.toFixed(1) +
+
+      "%" +
+
+      "<br>" +
+
+      "STRONG: " +
+      strongEvaluated +
+
+      " | Correct: " +
+      strongCorrect +
+
+      " | Incorrect: " +
+      strongIncorrect +
+
+      " | Accuracy: " +
+      strongAccuracy.toFixed(1) +
+
+      "%";
+
+  }
+
+
+  // ===============================
+  // LIVE STATUS
+  // ===============================
 
   status.textContent =
-    "Disconnected ❌ Code: " + event.code;
+    "Live data received 🟢";
+
+};
+
+
+// ===============================
+// WEBSOCKET ERROR
+// ===============================
+
+ws.onerror = function (error) {
+
+  console.error(
+    "WebSocket error:",
+    error
+  );
+
+  status.textContent =
+    "WebSocket ERROR ❌";
+
+  alert(
+    "Deriv WebSocket connection failed."
+  );
+
+};
+
+
+// ===============================
+// WEBSOCKET CLOSED
+// ===============================
+
+ws.onclose = function (event) {
+
+  console.log(
+    "WebSocket closed:",
+    event
+  );
+
+  status.textContent =
+    "Disconnected ❌ Code: " +
+    event.code;
 
 };
 
