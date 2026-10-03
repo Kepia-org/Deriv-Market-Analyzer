@@ -328,10 +328,7 @@ if (bullishCount >= 3) {
 
 // SIGNAL HISTORY
 
-if (
-  currentConfirmedSignal !== "" &&
-  currentConfirmedSignal !== lastConfirmedSignal
-) {
+if (currentConfirmedSignal !== "") {
 
   signalHistoryList.unshift(currentConfirmedSignal);
 
@@ -343,19 +340,19 @@ if (
     signalHistoryList.join("<br>");
 
   // Start a new paper-trade evaluation
+  // for EVERY confirmed signal
 
   pendingSignals.push({
-  type: currentConfirmedSignal,
-  entryPrice: currentPrice,
-  ticks: 0
-});
+    type: currentConfirmedSignal,
+    entryPrice: currentPrice,
+    ticks: 0
+  });
 
   totalSignals++;
-performance.innerHTML =
-  "Pending evaluation...<br>" +
-  "Signals generated: " + totalSignals;
-  lastConfirmedSignal = currentConfirmedSignal;
 
+  performance.innerHTML =
+    "Pending evaluation...<br>" +
+    "Signals generated: " + totalSignals;
 }
 // SIGNAL STRENGTH
 
