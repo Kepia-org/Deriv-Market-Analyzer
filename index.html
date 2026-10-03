@@ -382,8 +382,6 @@ if (strengthPercent >= 0.20) {
 
 }
         }
-
-      }
 // EVALUATE PENDING SIGNALS
 
 for (let i = pendingSignals.length - 1; i >= 0; i--) {
@@ -433,6 +431,8 @@ for (let i = pendingSignals.length - 1; i >= 0; i--) {
       "<br>Accuracy: " + accuracy.toFixed(1) + "%";
   }
 }
+      }
+
       status.textContent = "Live data received 🟢";
 
   };
