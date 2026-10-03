@@ -137,6 +137,14 @@ const signalHistoryList = [];
 let totalSignals = 0;
 let correctSignals = 0;
 let incorrectSignals = 0;
+
+let buySignals = 0;
+let buyCorrect = 0;
+let buyIncorrect = 0;
+
+let sellSignals = 0;
+let sellCorrect = 0;
+let sellIncorrect = 0;
   const pendingSignals = [];
 const EVALUATION_TICKS = 5;
   // Store recent market prices
@@ -343,13 +351,18 @@ if (currentConfirmedSignal !== "") {
   // for EVERY confirmed signal
 
   pendingSignals.push({
-    type: currentConfirmedSignal,
-    entryPrice: currentPrice,
-    ticks: 0
-  });
+  type: currentConfirmedSignal,
+  entryPrice: currentPrice,
+  strength: strengthPercent,
+  ticks: 0
+});
 
   totalSignals++;
-
+if (currentConfirmedSignal === "CONFIRMED BUY 🟢") {
+  buySignals++;
+} else if (currentConfirmedSignal === "CONFIRMED SELL 🔴") {
+  sellSignals++;
+}
   performance.innerHTML =
     "Pending evaluation...<br>" +
     "Signals generated: " + totalSignals;
@@ -408,12 +421,25 @@ for (let i = pendingSignals.length - 1; i >= 0; i--) {
     }
 
     if (correct) {
-      correctSignals++;
-    } else {
-      incorrectSignals++;
-    }
+  correctSignals++;
 
-    pendingSignals.splice(i, 1);
+  if (pending.type === "CONFIRMED BUY 🟢") {
+    buyCorrect++;
+  } else if (pending.type === "CONFIRMED SELL 🔴") {
+    sellCorrect++;
+  }
+
+} else {
+  incorrectSignals++;
+
+  if (pending.type === "CONFIRMED BUY 🟢") {
+    buyIncorrect++;
+  } else if (pending.type === "CONFIRMED SELL 🔴") {
+    sellIncorrect++;
+  }
+}
+
+pendingSignals.splice(i, 1);
 
     const evaluatedSignals =
       correctSignals + incorrectSignals;
@@ -421,11 +447,37 @@ for (let i = pendingSignals.length - 1; i >= 0; i--) {
     const accuracy =
       (correctSignals / evaluatedSignals) * 100;
 
-    performance.innerHTML =
-      "Signals: " + evaluatedSignals +
-      "<br>Correct: " + correctSignals +
-      "<br>Incorrect: " + incorrectSignals +
-      "<br>Accuracy: " + accuracy.toFixed(1) + "%";
+    const buyEvaluated =
+  buyCorrect + buyIncorrect;
+
+const sellEvaluated =
+  sellCorrect + sellIncorrect;
+
+const buyAccuracy =
+  buyEvaluated > 0
+    ? (buyCorrect / buyEvaluated) * 100
+    : 0;
+
+const sellAccuracy =
+  sellEvaluated > 0
+    ? (sellCorrect / sellEvaluated) * 100
+    : 0;
+
+performance.innerHTML =
+  "Signals: " + evaluatedSignals +
+  "<br>Correct: " + correctSignals +
+  "<br>Incorrect: " + incorrectSignals +
+  "<br>Accuracy: " + accuracy.toFixed(1) + "%" +
+  "<br><br>" +
+  "BUY: " + buyEvaluated +
+  " | Correct: " + buyCorrect +
+  " | Incorrect: " + buyIncorrect +
+  " | Accuracy: " + buyAccuracy.toFixed(1) + "%" +
+  "<br>" +
+  "SELL: " + sellEvaluated +
+  " | Correct: " + sellCorrect +
+  " | Incorrect: " + sellIncorrect +
+  " | Accuracy: " + sellAccuracy.toFixed(1) + "%";
   }
 }
       }
